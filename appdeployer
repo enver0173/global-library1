@@ -1,0 +1,26 @@
+properties([parameters([string(defaultValue: '', description: '', name: '', trim: false), string(defaultValue: 'v1', description: 'Please provide a version number', name: 'APP_VERSION', trim: false)])])
+node {
+    stage("Pull repo"){
+        git 'https://github.com/enver0173/Nodejs_app.git'
+    }
+    stage("Build, Tag Image"){
+        sh "docker build -t app1:${APP_VERSION} ."
+        
+    }
+    stage("Build, Tag Image"){
+        sh '''docker tag app1:${APP_VERSION} 718231301469.dkr.ecr.us-east-1.amazonaws.com/app1:${APP_VERSION}'''
+        
+    }
+    stage("Login to ECR"){
+        sh '''$(aws ecr get-login --no-include-email --region us-east-1)'''
+        
+    }
+    stage("Pull PUSH"){
+        sh "docker push 718231301469.dkr.ecr.us-east-1.amazonaws.com/app1:${APP_VERSION}"
+        
+    }
+    stage("Notify "){
+        sh "echo hello"
+        
+    }
+}
